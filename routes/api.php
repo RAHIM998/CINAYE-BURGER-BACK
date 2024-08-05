@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BurgerController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,5 +21,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('user/{id}', [UserController::class, 'show'])->name('show');
     Route::put('user/{id}', [UserController::class, 'update']);
     Route::delete('user/{id}', [UserController::class, 'destroy']);
+
+    //Méthodes des burgers
+    Route::middleware('Admin')->group(function () {
+        Route::get('/burgers/trashed', [BurgerController::class, 'archivedBurger']);
+        Route::get('/burgers/trashed/{id}', [BurgerController::class, 'restoreBurger']);
+        Route::apiResource('burgers', BurgerController::class);
+    });
+
 
 });
