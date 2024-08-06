@@ -14,7 +14,7 @@ use Mockery\Exception;
 
 class UserController extends Controller
 {
-    //Affichage des utilisateurs
+    //------------------------------------------------------------------Affichage des utilisateurs-------------------------------------------------------
     public function index()
     {
         try {
@@ -28,23 +28,29 @@ class UserController extends Controller
         }
     }
 
-    //Sauvegarde des utilisateurs
+    //------------------------------------------------------------------Sauvegarde des utilisateurs------------------------------------------------------------
     public function store(UserRequest $request)
     {
-        /*$try {
+        try {
             $validated = $request->validated();
 
-            $users = User::create($validated);
+            $users = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'telephone' => $validated['telephone'],
+                'password' => Hash::make($validated['password']),
+                'role' => "admin",
+            ]);
 
             return $this->jsonResponse(true, 'Utilisateur créé avec succès !', $users, 201);
 
         } catch (\Exception $exception) {
 
             return $this->jsonResponse(false, $exception->getMessage(), [], 500);
-        }*/
+        }
     }
 
-    //Fonction de détails de l'utilisateur
+    //---------------------------------------------------------------Fonction de détails de l'utilisateur--------------------------------------------------
     public function show(string $id)
     {
         try {
@@ -56,7 +62,7 @@ class UserController extends Controller
         }
     }
 
-    //Fonction de modification
+    //-------------------------------------------------------------------Fonction de modification----------------------------------------------------------
     public function update(Request $request, string $id): \Illuminate\Http\JsonResponse
     {
 
@@ -89,7 +95,7 @@ class UserController extends Controller
         }
     }
 
-
+    //--------------------------------------------------------------------Suppression d'utilisateur------------------------------------------------------
     public function destroy(string $id): \Illuminate\Http\JsonResponse
     {
         try {

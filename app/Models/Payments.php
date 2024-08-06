@@ -10,13 +10,13 @@ class Payments extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
-        'order_id',
+        'orders_id',
         'amountOrder',
         'payment_date',
     ];
 
     // Relation avec les commandes
-    public function order()
+    public function orders()
     {
         return $this->belongsTo(Orders::class);
     }

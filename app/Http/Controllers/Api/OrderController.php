@@ -14,7 +14,7 @@ use Mockery\Exception;
 
 class OrderController extends Controller
 {
-    //Méthode d'affichage des commandes
+    //------------------------------------------------------Méthode d'affichage des commandes---------------------------------------------------------
     public function index()
     {
         if (Auth::user()->isAdmin()){
@@ -25,23 +25,26 @@ class OrderController extends Controller
         }
     }
 
-    //Filtrage des commandes
 
-    //Commandes du jours
+    //------------------------------------------------------------Filtrage des commandes-----------------------------------------------------------
+
+    //----------------------------------------------------------Commandes du jours-----------------------------------------------------------------------
     public function dailyOrders()
     {
         $todayOrders = Orders::whereDate('created_at', Carbon::today())->get();
         return $this->jsonResponse(true, "Liste des commandes du jour", $todayOrders);
     }
 
-    //Commandes en cours
+
+    //---------------------------------------------------------Commandes en cours---------------------------------------------------------------------------
     public function pendingOrders()
     {
         $pendingOrders = Orders::where('status', 'pending')->get();
         return $this->jsonResponse(true, "Liste des commandes en cours", $pendingOrders);
     }
 
-   //Méthode de sauvegarde d'une commande
+
+   //---------------------------------------------------Méthode de sauvegarde d'une commande-----------------------------------------------------------
     public function store(OrderRequest $request)
     {
         try {
@@ -53,16 +56,16 @@ class OrderController extends Controller
             $burgerOrder = [];
             foreach ($validatedData['burgers'] as $burger) {
                 $existBurger = Burger::findOrFail($burger['id']);
-                if ($existBurger->quantity < $burger['quantity']) {
-                    DB::rollBack();
-                    return $this->jsonResponse(false, "Quantité insuffisante !", [], 500);
-                } else {
+                if ($existBurger){
                     $unitPrice = $existBurger->price;
                     $amountOrder += $unitPrice * $burger['quantity'];
                     $burgerOrder[$burger['id']] = [
                         'quantity' => $burger['quantity'],
                         'unitPrice' => $unitPrice,
                     ];
+                }else{
+                    return $this->jsonResponse(false, "Désolé ce burger n'existe pas", [], 400);
+                    DB::rollBack();
                 }
             }
 
@@ -76,11 +79,10 @@ class OrderController extends Controller
                 'status' => "pending",
             ]);
 
-            // Mise à jour du stock et attachement des produits à la commande
+            //Mise à jour du stock et attachement des produits à la commande
             foreach ($burgerOrder as $burgerId => $bg) {
                 try {
                     $burgerToSave = Burger::findOrFail($burgerId);
-                    $burgerToSave->decrement('quantity', $bg['quantity']);
                     $order->burgers()->attach($burgerToSave->id, $bg);
                 } catch (Exception $exception){
                     DB::rollBack();
@@ -98,7 +100,8 @@ class OrderController extends Controller
         }
     }
 
-    //Méthode d'affichage des détails d'une commande
+
+    //---------------------------------------------------Méthode d'affichage des détails d'une commande----------------------------------------------------------
     public function show(string $id): \Illuminate\Http\JsonResponse
     {
         try {
@@ -109,11 +112,16 @@ class OrderController extends Controller
         }
     }
 
-    //Méthode de modification des commandes
+
+    //---------------------------------------------------Méthode de modification du statut d'une commande---------------------------------------------------------
     public function update(Request $request, string $id): \Illuminate\Http\JsonResponse
     {
         try {
             $Order = Orders::findOrFail($id);
+
+            if ($Order->status === 'paid') {
+                return $this->jsonResponse(false, "Le statut de la commande ne peut pas être modifié après paiement", [], 403);
+            }
 
             // Validez le nouveau statut
             $newStatus = $request->input('status');
@@ -129,9 +137,19 @@ class OrderController extends Controller
             }elseif ($newStatus === 'paid'){
                 $Order->status = $newStatus;
                 $Order->save();
+                // Appel de la méthode store de PaymentController
+                $paymentsController = new PaymentsController();
+                $paymentRequest = new Request([
+                    'order_id' => $id
+                ]);
+                $paymentResponse = $paymentsController->store($paymentRequest);
+
+                if ($paymentResponse->getData()->success === false) {
+                    return $this->jsonResponse(false, "Erreur lors de la création du paiement");
+                }
             }
 
-            return $this->jsonResponse(true, "Statut modifié avec succès !", $Order, 201);
+            return $this->jsonResponse(true, "Statut modifié avec succès. Et le paiement a été ajouté!", $Order, 201);
 
 
         } catch (Exception $e) {
@@ -139,14 +157,17 @@ class OrderController extends Controller
         }
     }
 
-    // Méthodes de suppression des commandes
+    //------------------------------------------------------Méthodes de suppression des commandes---------------------------------------------------
     public function destroy(string $id): \Illuminate\Http\JsonResponse
     {
         try {
             $Order = Orders::findOrFail($id);
+            if ($Order->status === 'paid') {
+                return $this->jsonResponse(false, "Désolé la commande a déja été validée. Vous ne pouvez pas supprimer la commande", [], 403);
+            }
             $Order->delete();
 
-            return $this->jsonResponse(true, "Commande archivée avrc succès !", $Order);
+            return $this->jsonResponse(true, "Commande annulée avec succès !", $Order);
         }catch (Exception $exception){
             return $this->jsonResponse(false, "Erreur !", $exception->getMessage(), 500);
         }

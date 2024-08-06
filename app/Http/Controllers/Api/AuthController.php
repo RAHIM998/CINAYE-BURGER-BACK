@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    //Fonction de création de compte
+    //--------------------------------------------------------Fonction de création de compte----------------------------------------------------------
     public function register(UserRequest $request): \Illuminate\Http\JsonResponse
     {
         try {
@@ -32,7 +32,7 @@ class AuthController extends Controller
         }
     }
 
-    //Fonction de connexion
+    //-----------------------------------------------------------------Fonction de connexion--------------------------------------------------------------
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -51,7 +51,7 @@ class AuthController extends Controller
         return $this->jsonResponse(false, "Email et/ou mot de passe incorrect", [], 401);
     }
 
-    //Fonction de déconnexion
+    //-----------------------------------------------------------------Fonction de déconnexion--------------------------------------------------------
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();

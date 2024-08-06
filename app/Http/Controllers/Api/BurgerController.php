@@ -12,7 +12,7 @@ use Mockery\Exception;
 
 class BurgerController extends Controller
 {
-    //Liste des burgers
+    //--------------------------------------------------------------------Liste des burgers---------------------------------------------------------------
     public function index()
     {
         try {
@@ -23,7 +23,7 @@ class BurgerController extends Controller
         }
     }
 
-    //Sauvegarde des burger
+    //-----------------------------------------------------------------------Sauvegarde des burger-----------------------------------------------------
     public function store(BurgerRequest $request)
     {
         try {
@@ -42,7 +42,7 @@ class BurgerController extends Controller
 
     }
 
-    //Détails des burgers
+    //--------------------------------------------------------------------------Détails des burgers----------------------------------------------------
     public function show(string $id)
     {
         try {
@@ -57,7 +57,7 @@ class BurgerController extends Controller
         }
     }
 
-    //Modification des des détails de burger
+    //--------------------------------------------------------------------Modification des des détails de burger---------------------------------------
     public function update(BurgerRequest $request, string $id): \Illuminate\Http\JsonResponse
     {
 
@@ -77,7 +77,7 @@ class BurgerController extends Controller
         }
     }
 
-    //Suppression des burger
+    //-----------------------------------------------------------------------------Suppression des burger----------------------------------------------
     public function destroy(string $id): \Illuminate\Http\JsonResponse
     {
         try {
@@ -93,7 +93,7 @@ class BurgerController extends Controller
         }
     }
 
-    // Visualisation des burgers archivés
+    //-----------------------------------------------------------------------Visualisation des burgers archivés-----------------------------------------------------
     public function archivedBurger(): \Illuminate\Http\JsonResponse
     {
         try {
@@ -104,7 +104,7 @@ class BurgerController extends Controller
         }
     }
 
-    // Récupération d'un burger archivé
+    //-------------------------------------------------------------------------Récupération d'un burger archivé--------------------------------------------
     public function restoreBurger(string $id): \Illuminate\Http\JsonResponse
     {
         try {

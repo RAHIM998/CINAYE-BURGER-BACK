@@ -21,10 +21,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('user', [UserController::class, 'index']);
     Route::get('user/{id}', [UserController::class, 'show']);
     Route::put('user/{id}', [UserController::class, 'update']);
-    Route::delete('user/{id}', [UserController::class, 'destroy']);
 
     //Méthodes accéssible que par les administrateurs
     Route::middleware('Admin')->group(function () {
+        //Méthodes des users
+        Route::post('/user', [UserController::class, 'store']);
+        Route::delete('user/{id}', [UserController::class, 'destroy']);
+
         //Méthodes des burgers
         Route::get('/burgers/trashed', [BurgerController::class, 'archivedBurger']);
         Route::get('/burgers/trashed/{id}', [BurgerController::class, 'restoreBurger']);
@@ -34,6 +37,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/order/daily', [OrderController::class, 'dailyOrders']);
         Route::get('/order/pending', [OrderController::class, 'pendingOrders']);
         Route::put('/order/{id}/status', [OrderController::class, 'update']);
+
+        //Methodes des payments
+        Route::get('payment/daily', [\App\Http\Controllers\Api\PaymentsController::class, 'dailyPayments']);
+        Route::apiResource('payment', \App\Http\Controllers\Api\PaymentsController::class);
     });
 
     //Route concernant les commandes
