@@ -13,6 +13,7 @@ class Burger extends Model
     protected $fillable = [
       'name',
       'price',
+      'quantity',
       'image',
       'description',
       'archived',
@@ -22,7 +23,6 @@ class Burger extends Model
     // Relation many-to-many avec les commandes
     public function orders()
     {
-        return $this->belongsToMany(Order::class)->withPivot('unitPrice', 'quantity');
+        return $this->belongsToMany(Order::class, 'burger__orders')->withPivot('quantity', 'unitPrice');
     }
-
 }

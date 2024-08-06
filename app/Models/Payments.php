@@ -12,12 +12,12 @@ class Payments extends Model
     protected $fillable = [
         'order_id',
         'amountOrder',
-        'amountOrderpayment_date',
+        'payment_date',
     ];
 
     // Relation avec les commandes
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Orders::class);
     }
 }

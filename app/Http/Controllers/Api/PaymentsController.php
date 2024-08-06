@@ -3,45 +3,57 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaymentRequest;
+use App\Models\Orders;
+use App\Models\Payments;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PaymentsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    //Lister les paiements
     public function index()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    //Sauvegarde de paiement
+    public function store(Request $request): JsonResponse
     {
-        //
+        try {
+
+            $validatedData = $request->validated();
+
+            $order = Orders::findOrFail($validatedData['order_id']);
+
+            $payment = Payments::create([
+                'order_id' => $validatedData['order_id'],
+                'amountOrder' => $order->amountOrder,
+                'payment_date' => Carbon::now()
+            ]);
+
+            return $this->jsonResponse(true, "Payment created", $payment, 201);
+
+        }catch (\Exception $exception){
+            return $this->jsonResponse(false, "Error", $exception->getMessage(), 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
+
+    //Voir les détails d'un paiement
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    //Modification de paiement
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    //Suppression de paiement
     public function destroy(string $id)
     {
         //

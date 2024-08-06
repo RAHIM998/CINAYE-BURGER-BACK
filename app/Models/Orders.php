@@ -11,6 +11,7 @@ class Orders extends Model
     use HasFactory, SoftDeletes;
     protected $fillable = [
         'user_id',
+        'numberOrder',
         'dateOrder',
         'amountOrder',
         'addressLivraison',
@@ -27,7 +28,7 @@ class Orders extends Model
     // Relation many-to-many avec les burgers
     public function burgers()
     {
-        return $this->belongsToMany(Burger::class)->withPivot('unitPrice', 'quantity');
+        return $this->belongsToMany(Burger::class, 'burger__orders')->withPivot('quantity', 'unitPrice');
     }
 
     // Relation avec les paiements

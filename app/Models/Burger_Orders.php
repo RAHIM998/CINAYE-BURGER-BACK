@@ -11,8 +11,8 @@ class Burger_Orders extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'order_id',
         'burger_id',
+        'order_id',
         'unitPrice',
         'quantity',
     ];
