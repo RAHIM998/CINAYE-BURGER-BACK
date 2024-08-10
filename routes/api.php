@@ -7,13 +7,13 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('guest')->group(function () {
+//Route::middleware('guest')->group(function () {
     //Méthode de connexion et de création de compte
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
-});
+//});
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+//Route::group(['middleware' => 'auth:sanctum'], function () {
     //Route de lougout
     Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -23,7 +23,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('user/{id}', [UserController::class, 'update']);
 
     //Méthodes accéssible que par les administrateurs
-    Route::middleware('Admin')->group(function () {
+    //Route::middleware('Admin')->group(function () {
         //Méthodes des users
         Route::post('/user', [UserController::class, 'store']);
         Route::delete('user/{id}', [UserController::class, 'destroy']);
@@ -41,7 +41,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         //Methodes des payments
         Route::get('payment/daily', [\App\Http\Controllers\Api\PaymentsController::class, 'dailyPayments']);
         Route::apiResource('payment', \App\Http\Controllers\Api\PaymentsController::class);
-    });
+    //});
 
     //Route concernant les commandes
     Route::post('/order', [\App\Http\Controllers\Api\OrderController::class, 'store']);
@@ -49,7 +49,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/order/{id}', [\App\Http\Controllers\Api\OrderController::class, 'show']);
     Route::delete('/order/{id}', [\App\Http\Controllers\Api\OrderController::class, 'destroy']);
 
-
-
-
-});
+//});

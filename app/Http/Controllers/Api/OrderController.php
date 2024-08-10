@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Models\Burger;
 use App\Models\Orders;
+use App\Notifications\InvoiceNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Mockery\Exception;
 
 class OrderController extends Controller
@@ -144,6 +146,8 @@ class OrderController extends Controller
                 ]);
                 $paymentResponse = $paymentsController->store($paymentRequest);
 
+                // Envoyer l'email de notification
+                //Notification::route('mail', $Order->user->email)->notify(new InvoiceNotification($Order));
                 if ($paymentResponse->getData()->success === false) {
                     return $this->jsonResponse(false, "Erreur lors de la création du paiement");
                 }

@@ -18,11 +18,11 @@ class UserController extends Controller
     public function index()
     {
         try {
-            if (Auth::user()->isAdmin()) {
+            //if (Auth::user()->isAdmin()) {
                 return $this->jsonResponse(true, 'Liste des utilisateurs récupérée avec succès', User::all());
-            } else {
-                return $this->jsonResponse(true, 'Informations de l\'utilisateur connecté récupérées avec succès', Auth::user());
-            }
+           // } else {
+             //   return $this->jsonResponse(true, 'Informations de l\'utilisateur connecté récupérées avec succès', Auth::user());
+            //}
         } catch (\Exception $e) {
             return $this->jsonResponse(false, $e->getMessage(), [], $e->getCode() ?: 500);
         }
@@ -72,8 +72,7 @@ class UserController extends Controller
                 'name' => ['required', 'min:2', 'regex:/^[\pL\s]+$/u'],
                 'telephone' => ['required', 'regex:/^\+?\d+$/'],
                 'email' => ['required', 'email', 'unique:users,email,'.$id],
-                'password' => ['sometimes', 'nullable', 'min:4'],
-                'c_password' => ['sometimes', 'nullable', 'same:password'],
+
             ]);
 
 
